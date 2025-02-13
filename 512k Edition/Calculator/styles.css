@@ -1,0 +1,122 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f2f2f7;
+}
+
+.calculator {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  background-color: #ececec;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  grid-gap: 5px;
+  margin-top: 10px;
+}
+
+button {
+  width: 70px;
+  height: 50px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #dcdcdc;
+}
+
+#display {
+  width: 220px;
+  height: 40px;
+  font-size: 24px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #fff;
+  text-align: right;
+  padding-right: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.config-panel {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.config-panel button {
+  display: block;
+  margin-bottom: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f2f2f7;
+}
+
+.calculator {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  background-color: #ececec;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 70px);
+  grid-gap: 5px;
+  margin-top: 10px;
+}
+
+button {
+  width: 70px;
+  height: 50px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  color: #333;
+}
+
+}
+
+.dark-theme button {
+  background-color: #444;
+}
+
+.old-ios-theme {
+  background-color: #000;
+}
+
+.old-ios-theme button {
+  background-color: #f9a825;
+  color: #fff;
+}
