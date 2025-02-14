@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Motivación</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .motivation-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-size: 24px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    let scene, camera, renderer;
+    let stars = [];
+    let texts = [];
+    let currentIndex = 0;
+
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      createStars();
+      createTexts();
+
+      camera.position.z = 100;
+
+      animate();
+      showNextText();
+    }
+
+    function createStars() {
+      const starGeometry = new THREE.SphereGeometry(0.1, 10, 10);
+      const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+      for (let i = 0; i < 1000; i++) {
+        const star = new THREE.Mesh(starGeometry, starMaterial);
+        star.position.x = (Math.random() - 0.5) * 2000;
+        star.position.y = (Math.random() - 0.5) * 2000;
+        star.position.z = (Math.random() - 0.5) * 2000;
+        stars.push(star);
+        scene.add(star);
+      }
+    }
+
+    function createTexts() {
+      const motivationalTexts = [
+"¡Nunca te rindas!",
+"Cree en ti mismo,",
+"La perseverancia te lleva al éxito,",
+"Sigue tus sueños, no te detengas,",
+"Hazlo con pasión o no lo hagas,",
+"La vida comienza donde termina la zona de confort,",
+"El futuro es ahora, ve por él,",
+"No te detengas hasta estar orgulloso,",
+"Lo único imposible es lo que no intentas,",
+"Cada paso cuenta, sigue avanzando,",
+"Haz lo que amas y nunca trabajarás un solo día,",
+"El éxito llega con esfuerzo y dedicación,",
+"Lo mejor está por venir,",
+"Nunca es tarde para empezar,",
+"Cree en ti y todo será posible,",
+"Tú eres más fuerte de lo que piensas,",
+"Hazlo ahora, no esperes más,",
+"El esfuerzo de hoy trae los frutos de mañana,",
+"Con paciencia y perseverancia todo se consigue,",
+"La actitud lo es todo,",
+"El único límite eres tú mismo,",
+"Cada día es una nueva oportunidad,",
+"Atrévete a ser diferente,",
+"La acción es el primer paso hacia el éxito,",
+"No te rindas, la victoria está más cerca de lo que piensas,",
+"Lo grande no se logra de la noche a la mañana,",
+"El éxito está en los pequeños detalles,",
+"Tu esfuerzo hoy define tu mañana,",
+"Hazlo por ti, hazlo por tus sueños,",
+"No dejes que nada te detenga,",
+"Cada reto es una oportunidad de crecimiento,",
+"El fracaso solo es un paso más hacia el éxito,",
+"Trabaja en silencio y deja que el éxito haga ruido,",
+"La clave del éxito es empezar,",
+"Hoy es un buen día para intentarlo de nuevo,",
+"Sueña en grande, trabaja duro y nunca te rindas,",
+"No esperes el momento perfecto, haz que el momento sea perfecto,",
+"Lo que hagas hoy determinará tu futuro,",
+"Si puedes imaginarlo, puedes lograrlo,",
+"Confía en el proceso, todo llega a su tiempo,",
+"No cuentes los días, haz que los días cuenten,",
+"Cambia tus pensamientos y cambiarás tu mundo,",
+"El éxito es la suma de pequeños esfuerzos diarios,",
+"No tengas miedo de empezar de nuevo,",
+"La vida es un 10% lo que te pasa y un 90% cómo reaccionas,",
+"Nunca subestimes el poder de la disciplina,",
+"Los grandes logros requieren tiempo y paciencia,",
+"Si quieres resultados diferentes, haz cosas diferentes,",
+"No importa cuántas veces caigas, lo que importa es cuántas veces te levantas,",
+"No te compares con los demás, compite contigo mismo,",
+"Todo esfuerzo tiene su recompensa,",
+"Si crees que puedes, ya estás a medio camino,",
+"Tú tienes el control de tu destino,",
+"Haz de cada día una obra maestra,",
+"Rodéate de personas que te impulsen a crecer,",
+"Persigue la excelencia, no la perfección,",
+"La pasión te llevará más lejos que la suerte,",
+"No busques excusas, busca soluciones,",
+"Tu única competencia eres tú mismo ayer,",
+"El que se cae y se levanta es más fuerte que el que nunca cayó,",
+"Si no desafías tus límites, jamás los superarás,",
+"Hazlo con miedo, pero hazlo,",
+"Transforma cada obstáculo en una oportunidad,",
+"La verdadera felicidad está en el progreso constante,",
+"No abandones lo que más quieres por lo que quieres ahora,",
+"Cada día es una nueva página en tu historia,",
+"La clave del éxito está en la constancia,",
+"No dejes que tus miedos limiten tu futuro,",
+"No esperes a tener ganas, hazlo y las ganas vendrán después,",
+"No te preocupes por los fracasos, preocúpate por no intentarlo,",
+"Los sueños solo funcionan si tú trabajas por ellos,",
+"Haz hoy lo que otros no quieren, y vivirás mañana como otros no pueden,",
+"Si te caes siete veces, levántate ocho,",
+"El mejor momento para empezar fue ayer. El segundo mejor momento es ahora,",
+"Nada cambia si tú no cambias,",
+"Cree en el poder de los pequeños pasos,",
+"La diferencia entre un sueño y una meta es la acción,",
+"Esfuérzate hasta que tu firma se convierta en autógrafo,",
+"No seas prisionero de tu pasado, sé el arquitecto de tu futuro,",
+"La mejor inversión que puedes hacer es en ti mismo,",
+"Las excusas solo te alejan de tus metas,",
+"Si el plan no funciona, cambia el plan, pero nunca la meta,",
+"Los resultados llegan cuando el esfuerzo no se detiene,",
+"No sueñes tu vida, vive tu sueño,",
+"Hazlo con amor y dedicación, y el éxito será inevitable,",
+"Lo mejor aún está por venir, sigue adelante,",
+"Nunca sabes qué tan fuerte eres hasta que ser fuerte es tu única opción,",
+"Tienes todo lo que necesitas para triunfar dentro de ti,",
+"Cada día es una nueva oportunidad para mejorar,",
+"Tus acciones de hoy definirán tu éxito de mañana,",
+"Confía en ti mismo más de lo que dudas de ti mismo,",
+"No busques el momento perfecto, haz que cada momento cuente,",
+"Aprende de los fracasos y sigue adelante con más fuerza,",
+"Tu potencial es infinito, úsalo,",
+"El éxito no es un destino, es un viaje,",
+"Si puedes soñarlo, puedes lograrlo,",
+"No te conformes con menos de lo que mereces,",
+"Tus sueños valen la pena, lucha por ellos,",
+"No importa cuán lento vayas, mientras no te detengas,",
+"El mejor momento para empezar es ahora,",
+        // Mucha Filosofia
+      ];
+
+      for (let i = 0; i < motivationalTexts.length; i++) {
+        const text = document.createElement('div');
+        text.textContent = motivationalTexts[i];
+        text.classList.add('motivation-text');
+        document.body.appendChild(text);
+        texts.push(text);
+      }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      for (let i = 0; i < stars.length; i++) {
+        stars[i].position.z += Math.random() * 0.5;
+        if (stars[i].position.z > 1000) {
+          stars[i].position.z = -1000;
+        }
+      }
+      renderer.render(scene, camera);
+    }
+
+    function showNextText() {
+      texts[currentIndex].style.opacity = 1;
+      setTimeout(() => {
+        fadeOutText(texts[currentIndex]);
+        currentIndex = (currentIndex + 1) % texts.length;
+        setTimeout(showNextText, 5000); // Mostrar siguiente texto después de 5 sec
+      }, 2000); // EFECTO VANISH HECHO CON JS ;)
+    }
+
+    function fadeOutText(text) {
+      let opacity = 1;
+      const fadeEffect = setInterval(() => {
+        if (opacity <= 0.1) {
+          clearInterval(fadeEffect);
+          text.style.opacity = 0;
+        } else {
+          text.style.opacity = opacity;
+          opacity -= opacity * 0.1;
+        }
+      }, 200);
+    }
+
+    window.addEventListener('resize', () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    });
+
+    init();
+  </script>
+</body>
+</html>
