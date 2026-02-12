@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MyOspace! Groups Utility</title>
+  <link rel="icon" type="image/x-icon" href="myona.png">
+  <style>
+    :root{
+      /* Aaaaahhhh hubiese tardado medio año si hubiese programado yo esto */
+      --bg0:#fff5fa;
+      --bg1:#ffe8f2;
+
+      --card: rgba(255,255,255,.78);
+      --card2: rgba(255,255,255,.65);
+
+      --stroke: rgba(255, 105, 180, .18);
+      --stroke2: rgba(255, 105, 180, .26);
+
+      --text:#2a0f1e;
+      --muted:#7a3a58;
+      --muted2:#935070;
+
+      --accent:#ff4fa1;   /* rosa principal */
+      --accent2:#ff86c4;  /* rosa suave */
+      --warn:#f59e0b;
+      --bad:#ef476f;
+      --ok:#10b981;
+
+      --r:18px;
+      --r2:14px;
+
+      --shadow: 0 18px 55px rgba(42, 15, 30, .10);
+      --shadow2: 0 10px 26px rgba(42, 15, 30, .08);
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1000px 600px at 15% 10%, rgba(255,79,161,.22), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(255,134,196,.20), transparent 62%),
+        radial-gradient(900px 600px at 55% 92%, rgba(16,185,129,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* Layout */
+    .app{
+      min-height:100%;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+      padding: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .glass{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    /* Header (logo + title) */
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 14px 14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand img{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1px solid var(--stroke2);
+      box-shadow: 0 10px 22px rgba(255,79,161,.12);
+      background: rgba(255,255,255,.6);
+    }
+    .brandTitle{
+      min-width:0;
+    }
+    .brandTitle h1{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brandTitle .sub{
+      margin-top:3px;
+      font-size: 12px;
+      color: var(--muted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .savepill{
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.65);
+      color: var(--muted);
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    /* Content grid */
+    .content{
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .content{ grid-template-columns: 1fr; }
+    }
+
+    .sidebar{
+      padding: 14px;
+      position: sticky;
+      top: 16px;
+      height: calc(100vh - 32px - 72px);
+      overflow: auto;
+    }
+    @media (max-width: 980px){
+      .sidebar{ position: static; height: auto; }
+    }
+
+    .main{
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    /* Sections */
+    .section{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: var(--r2);
+      background: rgba(255,255,255,.60);
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow2);
+    }
+    .section h2{
+      margin: 0 0 10px;
+      font-size: 12px;
+      letter-spacing:.45px;
+      text-transform: uppercase;
+      color: var(--muted);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat{
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--stroke);
+    }
+    .stat .n{
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: .2px;
+      color: #3a1030;
+    }
+    .stat .l{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 2px;
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .input{
+      flex:1;
+      min-width: 180px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.72);
+      color: var(--text);
+      border: 1px solid var(--stroke2);
+      outline:none;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .input:focus{
+      border-color: rgba(255,79,161,.55);
+      box-shadow: 0 0 0 4px rgba(255,79,161,.10);
+      background: rgba(255,255,255,.86);
+    }
+
+    .btn{
+      border: none;
+      cursor: pointer;
+      padding: 11px 12px;
+      border-radius: 14px;
+      color: #3a1030;
+      background: rgba(255,255,255,.75);
+      border: 1px solid var(--stroke2);
+      transition: transform .08s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      white-space:nowrap;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,.90);
+      border-color: rgba(255,79,161,.35);
+      box-shadow: 0 10px 20px rgba(42,15,30,.07);
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.primary{
+      color: #fff;
+      background: linear-gradient(135deg, rgba(255,79,161,.95), rgba(255,134,196,.85));
+      border-color: rgba(255,79,161,.40);
+      box-shadow: 0 14px 26px rgba(255,79,161,.18);
+    }
+    .btn.danger{
+      color: #fff;
+      background: rgba(239,71,111,.92);
+      border-color: rgba(239,71,111,.35);
+      box-shadow: 0 14px 26px rgba(239,71,111,.14);
+    }
+
+    .kbd{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.70);
+      border: 1px solid rgba(255,79,161,.25);
+      color: var(--muted);
+    }
+
+    .hint{
+      font-size: 12px;
+      color: var(--muted2);
+      line-height: 1.35;
+      margin-top: 10px;
+    }
+
+    /* Topbar */
+    .topbar{
+      padding: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .titleBlock{ min-width: 0; }
+    .titleBlock .t{ margin:0; font-size: 18px; letter-spacing:.2px; }
+    .titleBlock .d{ margin-top:4px; font-size: 12px; color: var(--muted2); line-height: 1.35; }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    /* Board */
+    .board{
+      padding: 12px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+      gap: 12px;
+    }
+
+    .group{
+      border-radius: var(--r);
+      background: rgba(255,255,255,.70);
+      border: 1px solid var(--stroke2);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height: 190px;
+      transition: outline-color .15s ease, background .15s ease, transform .12s ease, border-color .18s ease;
+    }
+    .group:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,79,161,.28);
+    }
+    .group.drag-over{
+      outline: 2px dashed rgba(16,185,129,.85);
+      outline-offset: -6px;
+      background: rgba(16,185,129,.06);
+    }
+
+    .gh{
+      padding: 12px 12px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px solid rgba(255,79,161,.16);
+    }
+
+    .gleft{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      min-width:0;
+    }
+
+    .gtitle{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      min-width:0;
+    }
+
+    .gname{
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing:.15px;
+      padding: 4px 6px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .gname[contenteditable="true"]{ cursor:text; }
+    .gname:focus{
+      outline:none;
+      border-color: rgba(255,79,161,.40);
+      box-shadow: 0 0 0 4px rgba(255,79,161,.10);
+      background: rgba(255,255,255,.90);
+    }
+
+    .meta{
+      display:flex;
+      gap: 8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,79,161,.22);
+      background: rgba(255,255,255,.80);
+      user-select:none;
+      white-space:nowrap;
+    }
+    .chip.locked{
+      border-color: rgba(122,58,88,.22);
+      color: var(--muted2);
+    }
+
+    .gbtns{
+      display:flex;
+      gap: 8px;
+      align-items:center;
+      flex:0 0 auto;
+    }
+
+    .icon{
+      width: 36px; height: 36px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(255,79,161,.24);
+      cursor:pointer;
+      user-select:none;
+      transition: background .18s ease, border-color .18s ease, transform .08s ease, box-shadow .18s ease;
+      color: #3a1030;
+    }
+    .icon:hover{
+      background: rgba(255,255,255,.95);
+      border-color: rgba(255,79,161,.40);
+      box-shadow: 0 10px 18px rgba(42,15,30,.07);
+    }
+    .icon:active{ transform: translateY(1px); }
+    .icon.danger{
+      background: rgba(239,71,111,.10);
+      border-color: rgba(239,71,111,.28);
+      color: #b51d44;
+    }
+    .icon.danger:hover{
+      background: rgba(239,71,111,.14);
+      border-color: rgba(239,71,111,.40);
+    }
+
+    .list{
+      padding: 10px 10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .empty{
+      margin-top: 4px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px dashed rgba(255,79,161,.25);
+      color: var(--muted2);
+      font-size: 12px;
+      text-align:center;
+      background: rgba(255,255,255,.78);
+    }
+
+    .user{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(255,79,161,.18);
+      cursor: grab;
+      transition: transform .10s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+      user-select:none;
+    }
+    .user:hover{
+      background: rgba(255,255,255,.92);
+      border-color: rgba(255,79,161,.28);
+      box-shadow: 0 10px 18px rgba(42,15,30,.06);
+    }
+    .user:active{ cursor: grabbing; transform: translateY(1px); }
+    .user.dragging{ opacity: .45; transform: scale(.99); }
+
+    .uleft{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+      flex: 1;
+    }
+    .dot{
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,79,161,1), rgba(255,134,196,1));
+      box-shadow: 0 0 0 3px rgba(255,79,161,.18);
+      flex:0 0 auto;
+    }
+    .uname{
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing:.12px;
+      padding: 4px 6px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      cursor:text;
+    }
+    .uname:focus{
+      outline:none;
+      border-color: rgba(16,185,129,.35);
+      box-shadow: 0 0 0 4px rgba(16,185,129,.10);
+      background: rgba(255,255,255,.95);
+    }
+
+    .uright{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateX(4px);
+      transition: opacity .15s ease, transform .15s ease;
+      flex:0 0 auto;
+    }
+    .user:hover .uright{ opacity: 1; transform: translateX(0); }
+
+    .tag{
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,79,161,.20);
+      background: rgba(255,255,255,.82);
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .strike .uname{
+      text-decoration: line-through;
+      color: rgba(42,15,30,.55);
+    }
+    .strike .dot{
+      background: rgba(122,58,88,.25);
+      box-shadow: 0 0 0 3px rgba(122,58,88,.10);
+    }
+
+    /* Modal */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      background: rgba(42,15,30,.28);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+    }
+    .overlay.show{ display:flex; }
+
+    .modal{
+      width: min(720px, 100%);
+      border-radius: 20px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,79,161,.22);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .mh{
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,79,161,.16);
+    }
+    .mh b{ font-size: 13px; letter-spacing:.25px; color:#3a1030; }
+    .mb{ padding: 14px; }
+    .mb .help{ color: var(--muted2); font-size: 12px; line-height: 1.35; margin-top: 8px; }
+
+    textarea{
+      width: 100%;
+      min-height: 320px;
+      resize: vertical;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.78);
+      color: #2a0f1e;
+      border: 1px solid rgba(255,79,161,.22);
+      outline:none;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    textarea:focus{
+      border-color: rgba(255,79,161,.45);
+      box-shadow: 0 0 0 4px rgba(255,79,161,.10);
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,79,161,.22);
+      color: #3a1030;
+      font-size: 12px;
+      box-shadow: var(--shadow2);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 60;
+    }
+    .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-2px); }
+
+    .divider{
+      height:1px;
+      background: rgba(255,79,161,.16);
+      margin: 12px 0;
+    }
+    .footerHint{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      color: var(--muted2);
+      font-size: 12px;
+    }
+    .footerHint span{
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,79,161,.18);
+      background: rgba(255,255,255,.78);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- HEADER -->
+  <header class="header glass">
+    <div class="brand">
+      <img src="myona.png" alt="MyOspace! logo">
+      <div class="brandTitle">
+        <h1>MyOspace! Groups Utility</h1>
+        <div class="sub">Organiza usuarios en grupos con drag &amp; drop</div>
+      </div>
+    </div>
+    <div class="savepill" id="savePill">Guardado ✓</div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <!-- Sidebar -->
+    <aside class="sidebar glass">
+      <div class="section">
+        <h2>Resumen <span class="chip">v1</span></h2>
+        <div class="stats">
+          <div class="stat">
+            <div class="n" id="statUsers">0</div>
+            <div class="l">Usuarios</div>
+          </div>
+          <div class="stat">
+            <div class="n" id="statGroups">0</div>
+            <div class="l">Grupos</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <input class="input" id="search" placeholder="Buscar usuario…" />
+        </div>
+        <div class="hint">Tip: arrastra usuarios entre grupos. Edita nombres haciendo clic en el texto.</div>
+      </div>
+
+      <div class="section">
+        <h2>Crear</h2>
+        <div class="row">
+          <button class="btn primary" id="openAddGroup">➕ Nuevo grupo <span class="kbd">G</span></button>
+          <button class="btn" id="openAddUser">👤 Nuevo usuario <span class="kbd">U</span></button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <button class="btn" id="btnExport">⬇️ Exportar <span class="kbd">Ctrl S</span></button>
+          <button class="btn" id="btnImport">⬆️ Importar</button>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn danger" id="btnReset">🧨 Reset</button>
+        </div>
+
+        <div class="footerHint">
+          <span><b>Enter</b> confirma edición</span>
+          <span><b>Esc</b> cancela</span>
+          <span><b>Drag</b> mover</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <section class="topbar glass">
+        <div class="titleBlock">
+          <div class="t">Panel de Grupos</div>
+          <div class="d">Grupo fijo: <b>Sin categorizar</b>. Todo se guarda automáticamente en tu navegador.</div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="quickAddUser">+ Usuario</button>
+          <button class="btn" id="quickAddGroup">+ Grupo</button>
+        </div>
+      </section>
+
+      <section class="glass">
+        <div class="board" id="board"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="mh">
+      <b id="modalTitle">Modal</b>
+      <div class="row" style="gap:8px">
+        <button class="btn" id="btnCopy" style="display:none">📋 Copiar</button>
+        <button class="btn" id="btnDownload" style="display:none">💾 Descargar</button>
+        <button class="btn danger" id="btnClose">✕</button>
+      </div>
+    </div>
+    <div class="mb" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">OK</div>
+
+<script>
+(() => {
+  const LS_KEY = "myospace_groups_utility_v1";
+
+  const $ = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+  const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
+  const nowIso = () => new Date().toISOString();
+
+  const elBoard = $("#board");
+  const elSearch = $("#search");
+  const elStatUsers = $("#statUsers");
+  const elStatGroups = $("#statGroups");
+  const elSavePill = $("#savePill");
+  const elToast = $("#toast");
+
+  const overlay = $("#overlay");
+  const modalTitle = $("#modalTitle");
+  const modalBody = $("#modalBody");
+  const btnClose = $("#btnClose");
+  const btnCopy = $("#btnCopy");
+  const btnDownload = $("#btnDownload");
+
+  // ---------- State ----------
+  function seed(){
+    return {
+      meta: { version: 1, createdAt: nowIso(), updatedAt: nowIso() },
+      groups: [{ id:"uncat", name:"Sin categorizar", locked:true }],
+      users: []
+    };
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return null;
+      const s = JSON.parse(raw);
+      if(!s || !Array.isArray(s.groups) || !Array.isArray(s.users)) return null;
+
+      if(!s.groups.some(g => g.id === "uncat")){
+        s.groups.unshift({ id:"uncat", name:"Sin categorizar", locked:true });
+      }
+      s.groups = s.groups.map(g => g.id === "uncat"
+        ? ({...g, locked:true, name:"Sin categorizar"})
+        : ({...g, locked: false})
+      );
+
+      const ids = new Set(s.groups.map(g => g.id));
+      s.users = s.users.map(u => ids.has(u.groupId) ? u : ({...u, groupId:"uncat"}));
+
+      s.meta ||= { version: 1, createdAt: nowIso(), updatedAt: nowIso() };
+      return s;
+    }catch{
+      return null;
+    }
+  }
+
+  const state = load() ?? seed();
+
+  // ---------- Persist ----------
+  function setSaved(flag){
+    elSavePill.textContent = flag ? "Guardado ✓" : "Guardando…";
+    elSavePill.style.color = flag ? "var(--muted)" : "var(--warn)";
+  }
+
+  let tSave = null;
+  function persist(){
+    setSaved(false);
+    clearTimeout(tSave);
+    tSave = setTimeout(() => {
+      state.meta.updatedAt = nowIso();
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      setSaved(true);
+    }, 160);
+  }
+
+  // ---------- Toast ----------
+  function toast(msg){
+    elToast.textContent = msg;
+    elToast.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => elToast.classList.remove("show"), 1500);
+  }
+
+  // ---------- Modal helpers ----------
+  function openModal(title, bodyNode, {copyText=null, downloadName=null} = {}){
+    modalTitle.textContent = title;
+    modalBody.innerHTML = "";
+    modalBody.appendChild(bodyNode);
+
+    btnCopy.style.display = copyText ? "inline-flex" : "none";
+    btnDownload.style.display = downloadName ? "inline-flex" : "none";
+
+    btnCopy.onclick = async () => {
+      try{
+        await navigator.clipboard.writeText(copyText);
+        toast("Copiado.");
+      }catch{
+        toast("No se pudo copiar.");
+      }
+    };
+
+    btnDownload.onclick = () => {
+      const blob = new Blob([copyText ?? ""], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = downloadName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2500);
+      toast("Descargando…");
+    };
+
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden","false");
+  }
+
+  function closeModal(){
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden","true");
+  }
+
+  btnClose.addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => { if(e.target === overlay) closeModal(); });
+  window.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && overlay.classList.contains("show")) closeModal();
+  });
+
+  // ---------- Actions ----------
+  function createGroup(name){
+    const clean = (name ?? "").trim();
+    if(!clean) return toast("Pon un nombre de grupo.");
+    state.groups.push({ id: uid(), name: clean, locked:false });
+    persist();
+    render();
+    toast("Grupo creado.");
+  }
+
+  function createUser(name, groupId="uncat"){
+    const clean = (name ?? "").trim();
+    if(!clean) return toast("Pon un nombre de usuario.");
+    state.users.unshift({ id: uid(), name: clean, groupId, struck:false, createdAt: nowIso() });
+    persist();
+    render();
+    toast("Usuario creado.");
+  }
+
+  function renameGroup(groupId, newName){
+    const g = state.groups.find(x => x.id === groupId);
+    if(!g || g.locked) return;
+    const clean = (newName ?? "").trim() || "Grupo";
+    g.name = clean;
+    persist();
+  }
+
+  function deleteGroup(groupId){
+    const g = state.groups.find(x => x.id === groupId);
+    if(!g || g.locked) return;
+    state.users.forEach(u => { if(u.groupId === groupId) u.groupId = "uncat"; });
+    state.groups = state.groups.filter(x => x.id !== groupId);
+    persist();
+    render();
+    toast("Grupo eliminado.");
+  }
+
+  function renameUser(userId, newName){
+    const u = state.users.find(x => x.id === userId);
+    if(!u) return;
+    const clean = (newName ?? "").trim() || "Usuario";
+    u.name = clean;
+    persist();
+  }
+
+  function toggleStrike(userId){
+    const u = state.users.find(x => x.id === userId);
+    if(!u) return;
+    u.struck = !u.struck;
+    persist();
+    render();
+  }
+
+  function deleteUser(userId){
+    state.users = state.users.filter(u => u.id !== userId);
+    persist();
+    render();
+    toast("Usuario eliminado.");
+  }
+
+  function moveUser(userId, groupId){
+    const u = state.users.find(x => x.id === userId);
+    if(!u) return;
+    u.groupId = groupId;
+    persist();
+    render();
+  }
+
+  // ---------- DnD ----------
+  let dragging = null;
+
+  function onDragStart(e){
+    const id = e.currentTarget.dataset.uid;
+    dragging = id;
+    e.dataTransfer.setData("text/plain", id);
+    e.dataTransfer.effectAllowed = "move";
+    e.currentTarget.classList.add("dragging");
+  }
+  function onDragEnd(e){
+    e.currentTarget.classList.remove("dragging");
+    dragging = null;
+    $$(".group").forEach(g => g.classList.remove("drag-over"));
+  }
+  function onGroupDragOver(e){
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    e.currentTarget.classList.add("drag-over");
+  }
+  function onGroupDragLeave(e){
+    e.currentTarget.classList.remove("drag-over");
+  }
+  function onGroupDrop(e){
+    e.preventDefault();
+    const gid = e.currentTarget.dataset.gid;
+    const uidStr = e.dataTransfer.getData("text/plain") || dragging;
+    e.currentTarget.classList.remove("drag-over");
+    if(uidStr && gid){
+      moveUser(uidStr, gid);
+      toast("Movido.");
+    }
+  }
+
+  // ---------- Render ----------
+  function render(){
+    const q = (elSearch.value ?? "").trim().toLowerCase();
+
+    elStatUsers.textContent = String(state.users.length);
+    elStatGroups.textContent = String(state.groups.length);
+
+    elBoard.innerHTML = "";
+
+    for(const g of state.groups){
+      const groupEl = document.createElement("div");
+      groupEl.className = "group";
+      groupEl.dataset.gid = g.id;
+
+      groupEl.addEventListener("dragover", onGroupDragOver);
+      groupEl.addEventListener("dragleave", onGroupDragLeave);
+      groupEl.addEventListener("drop", onGroupDrop);
+
+      const gh = document.createElement("div");
+      gh.className = "gh";
+
+      const gleft = document.createElement("div");
+      gleft.className = "gleft";
+
+      const gtitle = document.createElement("div");
+      gtitle.className = "gtitle";
+
+      const gname = document.createElement("div");
+      gname.className = "gname";
+      gname.textContent = g.name;
+
+      if(!g.locked){
+        gname.contentEditable = "true";
+        gname.spellcheck = false;
+        gname.addEventListener("keydown", (ev) => {
+          if(ev.key === "Enter"){ ev.preventDefault(); gname.blur(); }
+          if(ev.key === "Escape"){ ev.preventDefault(); gname.textContent = g.name; gname.blur(); }
+        });
+        gname.addEventListener("blur", () => renameGroup(g.id, gname.textContent));
+      }
+
+      gtitle.appendChild(gname);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+
+      const usersInGroupAll = state.users.filter(u => u.groupId === g.id);
+      const chipCount = document.createElement("span");
+      chipCount.className = "chip";
+      chipCount.textContent = `${usersInGroupAll.length} usuario${usersInGroupAll.length===1?"":"s"}`;
+      meta.appendChild(chipCount);
+
+      if(g.locked){
+        const chipLocked = document.createElement("span");
+        chipLocked.className = "chip locked";
+        chipLocked.textContent = "fijo";
+        meta.appendChild(chipLocked);
+      }
+
+      gleft.appendChild(gtitle);
+      gleft.appendChild(meta);
+
+      const gbtns = document.createElement("div");
+      gbtns.className = "gbtns";
+
+      const addBtn = document.createElement("div");
+      addBtn.className = "icon";
+      addBtn.title = "Añadir usuario aquí";
+      addBtn.textContent = "+";
+      addBtn.addEventListener("click", () => openUserCreateModal(g.id));
+      gbtns.appendChild(addBtn);
+
+      if(!g.locked){
+        const delBtn = document.createElement("div");
+        delBtn.className = "icon danger";
+        delBtn.title = "Eliminar grupo";
+        delBtn.textContent = "🗑";
+        delBtn.addEventListener("click", () => {
+          openConfirmModal(
+            `Eliminar "${g.name}"`,
+            `Los usuarios de este grupo volverán a "Sin categorizar".`,
+            () => deleteGroup(g.id)
+          );
+        });
+        gbtns.appendChild(delBtn);
+      }
+
+      gh.appendChild(gleft);
+      gh.appendChild(gbtns);
+
+      const list = document.createElement("div");
+      list.className = "list";
+
+      let users = usersInGroupAll;
+      if(q) users = users.filter(u => (u.name ?? "").toLowerCase().includes(q));
+
+      if(users.length === 0){
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = q ? "No hay coincidencias en este grupo" : "Suelta usuarios aquí";
+        list.appendChild(empty);
+      }else{
+        for(const u of users){
+          const userEl = document.createElement("div");
+          userEl.className = "user" + (u.struck ? " strike" : "");
+          userEl.draggable = true;
+          userEl.dataset.uid = u.id;
+          userEl.addEventListener("dragstart", onDragStart);
+          userEl.addEventListener("dragend", onDragEnd);
+
+          const uleft = document.createElement("div");
+          uleft.className = "uleft";
+
+          const dot = document.createElement("div");
+          dot.className = "dot";
+
+          const uname = document.createElement("div");
+          uname.className = "uname";
+          uname.textContent = u.name;
+          uname.contentEditable = "true";
+          uname.spellcheck = false;
+
+          uname.addEventListener("keydown", (ev) => {
+            if(ev.key === "Enter"){ ev.preventDefault(); uname.blur(); }
+            if(ev.key === "Escape"){ ev.preventDefault(); uname.textContent = u.name; uname.blur(); }
+          });
+          uname.addEventListener("blur", () => renameUser(u.id, uname.textContent));
+
+          uleft.appendChild(dot);
+          uleft.appendChild(uname);
+
+          const uright = document.createElement("div");
+          uright.className = "uright";
+
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.textContent = u.struck ? "tachado" : "activo";
+
+          const strikeBtn = document.createElement("div");
+          strikeBtn.className = "icon";
+          strikeBtn.title = u.struck ? "Quitar tachado" : "Tachar";
+          strikeBtn.textContent = "✓";
+          strikeBtn.addEventListener("click", (ev) => { ev.stopPropagation(); toggleStrike(u.id); });
+
+          const delBtn = document.createElement("div");
+          delBtn.className = "icon danger";
+          delBtn.title = "Eliminar usuario";
+          delBtn.textContent = "🗑";
+          delBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            openConfirmModal(`Eliminar usuario`, `Se borrará "${u.name}".`, () => deleteUser(u.id));
+          });
+
+          uright.appendChild(tag);
+          uright.appendChild(strikeBtn);
+          uright.appendChild(delBtn);
+
+          userEl.appendChild(uleft);
+          userEl.appendChild(uright);
+          list.appendChild(userEl);
+        }
+      }
+
+      groupEl.appendChild(gh);
+      groupEl.appendChild(list);
+      elBoard.appendChild(groupEl);
+    }
+  }
+
+  // ---------- Modals ----------
+  function openConfirmModal(title, text, onConfirm){
+    const wrap = document.createElement("div");
+    const p = document.createElement("div");
+    p.className = "help";
+    p.textContent = text;
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginTop = "12px";
+    row.style.justifyContent = "flex-end";
+
+    const cancel = document.createElement("button");
+    cancel.className = "btn";
+    cancel.textContent = "Cancelar";
+    cancel.onclick = () => closeModal();
+
+    const ok = document.createElement("button");
+    ok.className = "btn danger";
+    ok.textContent = "Confirmar";
+    ok.onclick = () => { closeModal(); onConfirm(); };
+
+    row.append(cancel, ok);
+    wrap.append(p, row);
+    openModal(title, wrap);
+  }
+
+  function openGroupCreateModal(){
+    const wrap = document.createElement("div");
+    const inp = document.createElement("input");
+    inp.className = "input";
+    inp.placeholder = "Nombre del grupo (ej: Moderación)";
+    inp.autofocus = true;
+
+    const help = document.createElement("div");
+    help.className = "help";
+    help.textContent = "Puedes renombrarlo después en el propio panel.";
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginTop = "12px";
+    row.style.justifyContent = "flex-end";
+
+    const cancel = document.createElement("button");
+    cancel.className = "btn";
+    cancel.textContent = "Cancelar";
+    cancel.onclick = () => closeModal();
+
+    const create = document.createElement("button");
+    create.className = "btn primary";
+    create.textContent = "Crear grupo";
+    create.onclick = () => { createGroup(inp.value); closeModal(); };
+
+    inp.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") create.click();
+      if(e.key === "Escape") closeModal();
+    });
+
+    row.append(cancel, create);
+    wrap.append(inp, help, row);
+    openModal("Nuevo grupo", wrap);
+    setTimeout(() => inp.focus(), 0);
+  }
+
+  function openUserCreateModal(groupId="uncat"){
+    const wrap = document.createElement("div");
+    const inp = document.createElement("input");
+    inp.className = "input";
+    inp.placeholder = "Nombre del usuario (ej: Mario#1234)";
+    inp.autofocus = true;
+
+    const hint = document.createElement("div");
+    hint.className = "help";
+    const gname = state.groups.find(g => g.id === groupId)?.name ?? "Sin categorizar";
+    hint.textContent = `Se añadirá en: "${gname}".`;
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginTop = "12px";
+    row.style.justifyContent = "flex-end";
+
+    const cancel = document.createElement("button");
+    cancel.className = "btn";
+    cancel.textContent = "Cancelar";
+    cancel.onclick = () => closeModal();
+
+    const create = document.createElement("button");
+    create.className = "btn primary";
+    create.textContent = "Crear usuario";
+    create.onclick = () => { createUser(inp.value, groupId); closeModal(); };
+
+    inp.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") create.click();
+      if(e.key === "Escape") closeModal();
+    });
+
+    row.append(cancel, create);
+    wrap.append(inp, hint, row);
+    openModal("Nuevo usuario", wrap);
+    setTimeout(() => inp.focus(), 0);
+  }
+
+  function openExportModal(){
+    const wrap = document.createElement("div");
+    const ta = document.createElement("textarea");
+    const text = JSON.stringify(state, null, 2);
+    ta.value = text;
+
+    const help = document.createElement("div");
+    help.className = "help";
+    help.textContent = "Guarda este JSON para restaurar el panel cuando quieras.";
+
+    wrap.append(ta, help);
+    openModal("Exportar JSON", wrap, { copyText: text, downloadName: "myospace-groups.json" });
+    ta.focus();
+    ta.select();
+  }
+
+  function openImportModal(){
+    const wrap = document.createElement("div");
+    const ta = document.createElement("textarea");
+    ta.placeholder = "{ pega aquí tu JSON exportado… }";
+
+    const help = document.createElement("div");
+    help.className = "help";
+    help.textContent = "Pega un JSON exportado. Si es válido, reemplazará tus datos actuales.";
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.style.marginTop = "12px";
+    row.style.justifyContent = "flex-end";
+
+    const cancel = document.createElement("button");
+    cancel.className = "btn";
+    cancel.textContent = "Cancelar";
+    cancel.onclick = () => closeModal();
+
+    const apply = document.createElement("button");
+    apply.className = "btn primary";
+    apply.textContent = "Aplicar importación";
+    apply.onclick = () => {
+      try{
+        const incoming = JSON.parse(ta.value);
+        if(!incoming || !Array.isArray(incoming.groups) || !Array.isArray(incoming.users)){
+          throw new Error("Estructura inválida.");
+        }
+
+        let groups = incoming.groups
+          .filter(g => g && typeof g.id === "string" && typeof g.name === "string");
+
+        if(!groups.some(g => g.id === "uncat")){
+          groups.unshift({ id:"uncat", name:"Sin categorizar", locked:true });
+        }
+        groups = groups.map(g => g.id==="uncat"
+          ? ({...g, id:"uncat", name:"Sin categorizar", locked:true})
+          : ({...g, locked:false})
+        );
+
+        const groupIds = new Set(groups.map(g => g.id));
+        let users = incoming.users
+          .filter(u => u && typeof u.id === "string" && typeof u.name === "string")
+          .map(u => ({
+            id: u.id,
+            name: u.name,
+            groupId: groupIds.has(u.groupId) ? u.groupId : "uncat",
+            struck: !!u.struck,
+            createdAt: typeof u.createdAt === "string" ? u.createdAt : nowIso()
+          }));
+
+        state.groups = groups;
+        state.users = users;
+        state.meta = { version: 1, createdAt: state.meta?.createdAt ?? nowIso(), updatedAt: nowIso() };
+
+        persist();
+        render();
+        closeModal();
+        toast("Importado.");
+      }catch(e){
+        toast("JSON inválido.");
+      }
+    };
+
+    row.append(cancel, apply);
+    wrap.append(ta, help, row);
+    openModal("Importar JSON", wrap);
+    ta.focus();
+  }
+
+  // ---------- UI wires ----------
+  $("#openAddGroup").addEventListener("click", openGroupCreateModal);
+  $("#openAddUser").addEventListener("click", () => openUserCreateModal("uncat"));
+  $("#quickAddGroup").addEventListener("click", openGroupCreateModal);
+  $("#quickAddUser").addEventListener("click", () => openUserCreateModal("uncat"));
+
+  $("#btnExport").addEventListener("click", openExportModal);
+  $("#btnImport").addEventListener("click", openImportModal);
+
+  $("#btnReset").addEventListener("click", () => {
+    openConfirmModal(
+      "Reset total",
+      "Se borrará todo lo guardado en este navegador.",
+      () => {
+        localStorage.removeItem(LS_KEY);
+        const fresh = seed();
+        state.meta = fresh.meta;
+        state.groups = fresh.groups;
+        state.users = fresh.users;
+        persist();
+        render();
+        toast("Reseteado.");
+      }
+    );
+  });
+
+  elSearch.addEventListener("input", render);
+
+  // shortcuts
+  window.addEventListener("keydown", (e) => {
+    if(overlay.classList.contains("show")) return;
+
+    if(e.key.toLowerCase() === "g" && !e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault();
+      openGroupCreateModal();
+    }
+    if(e.key.toLowerCase() === "u" && !e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault();
+      openUserCreateModal("uncat");
+    }
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s"){
+      e.preventDefault();
+      openExportModal();
+    }
+  });
+
+  // initial
+  setSaved(true);
+  render();
+})();
+</script>
+
+</body>
+</html>
